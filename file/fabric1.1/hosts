@@ -1,0 +1,23 @@
+127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
+::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
+10.200.156.202       zookeeper0
+10.200.156.203       zookeeper1
+10.200.156.204       zookeeper2
+10.200.156.202       kafka0
+10.200.156.203       kafka1
+10.200.156.204       kafka2
+10.200.156.205       kafka3
+10.200.156.202       orderer.example.com
+10.200.156.203       orderer1.example.com
+10.200.156.204       orderer2.example.com
+10.200.156.205       orderer3.example.com
+10.200.156.202       ca.org1.example.com
+10.200.156.202       peer0.org1.example.com
+10.200.156.202       peer1.org1.example.com
+10.200.156.203       ca.org2.example.com
+10.200.156.203       peer0.org2.example.com
+10.200.156.203       peer1.org2.example.com
+10.200.156.204       ca.org3.example.com
+10.200.156.204       peer0.org3.example.com
+10.200.156.204       peer1.org3.example.com
+

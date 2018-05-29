@@ -1,0 +1,67 @@
+---
+
+
+- hosts: org1
+  remote_user: hyper
+  tasks:
+    - name :  peer channel create
+      shell:  cd /home/;docker exec cli0 peer channel create -o orderer.example.com:7050 -c mychannel -f /opt/gopath/src/github.com/hyperledger/fabric/peer/channel-artifacts/channel.tx --tls true --cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem
+
+- hosts: org1
+  remote_user: hyper
+  tasks:
+    - name :  加入org1 两个peer
+      shell:  cd /home/;docker exec cli0 cp mychannel.block channel-artifacts/;docker exec cli0 peer channel join -b mychannel.block;docker exec cli1 peer channel join -b channel-artifacts/mychannel.block
+
+
+
+- hosts: org2
+  remote_user: hyper
+  tasks:
+    - name: 复制mychannel.block到org2上
+      copy: src=/home/channel-artifacts/mychannel.block dest=/home/channel-artifacts/mychannel.block  owner=hyper group=hyper mode=0755
+  tasks:
+    - name :  加入org2 两个peer
+      shell:  cd /home/;docker exec cli0 peer channel join -b channel-artifacts/mychannel.block;docker exec cli1 peer channel join -b channel-artifacts/mychannel.block
+
+- hosts: org3
+  remote_user: hyper
+  tasks:
+    - name: 复制mychannel.block到org3上      
+      copy: src=/home/channel-artifacts/mychannel.block dest=/home/channel-artifacts/mychannel.block  owner=hyper group=hyper mode=0755
+  tasks:
+    - name :  加入org3 两个peer
+      shell:  cd /home/;docker exec cli0 peer channel join -b channel-artifacts/mychannel.block;docker exec cli1 peer channel join -b channel-artifacts/mychannel.block
+
+
+- hosts: org1
+  remote_user: hyper
+  tasks:
+    - name :  更新org1锚点信息
+      shell:  cd /home/;docker exec cli0 peer channel update -o orderer.example.com:7050 -c mychannel -f ./channel-artifacts/Org1MSPanchors.tx --tls true --cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem
+
+- hosts: org2
+  remote_user: hyper
+  tasks:
+    - name :  更新org2锚点信息
+      shell:  cd /home/;docker exec cli0 peer channel update -o orderer.example.com:7050 -c mychannel -f ./channel-artifacts/Org2MSPanchors.tx --tls true --cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem
+
+- hosts: org3
+  remote_user: hyper
+  tasks:
+    - name :  更新org3锚点信息
+      shell:  cd /home/;docker exec cli0 peer channel update -o orderer.example.com:7050 -c mychannel -f ./channel-artifacts/Org3MSPanchors.tx --tls true --cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem
+
+- hosts: org1,org2,org3
+  remote_user: hyper
+  tasks:
+    - name :  安装合约
+      shell:  cd /home/;docker   cp examples/chaincode/go/chaincode_example02  cli0:/opt/gopath/src/github.com/hyperledger/fabric/peer ;docker exec cli0 peer chaincode install -n mycc -v 1.0 -p github.com/hyperledger/fabric/peer//chaincode_example02;docker  cp examples/chaincode/go/chaincode_example02  cli1:/opt/gopath/src/github.com/hyperledger/fabric/peer;docker exec cli1 peer chaincode install -n mycc -v 1.0 -p github.com/hyperledger/fabric/peer//chaincode_example02
+      ignore_errors: yes
+- hosts: org1
+  remote_user: hyper
+  tasks:
+    - name :  实例化合约
+      shell:  cd /home/;docker exec cli0 peer chaincode instantiate -o orderer.example.com:7050 --tls true --cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem -C mychannel -n mycc -v 1.0 -c '{"Args":["init","a","100","b","200"]}' -P "OR ('Org1MSP.member','Org2MSP.member','Org3MSP.member')"
+
+

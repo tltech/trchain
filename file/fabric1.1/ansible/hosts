@@ -1,0 +1,11 @@
+[org]
+org1 ansible_ssh_port=22 ansible_ssh_host=10.200.156.202
+org2 ansible_ssh_port=22 ansible_ssh_host=10.200.156.203
+org3 ansible_ssh_port=22 ansible_ssh_host=10.200.156.204
+ext ansible_ssh_port=22 ansible_ssh_host=10.200.156.205
+
+[org:vars]
+ansible_ssh_user='root'
+ansible_ssh_pass='123456'
+
+

@@ -1,0 +1,121 @@
+---
+
+- hosts: org1
+  remote_user: root
+  tasks:
+    - name :  初始化org1 compose
+      shell:  su - hyper -c "composer card delete -c PeerAdmin@byfn-network-org1;composer card delete -c PeerAdmin@byfn-network-org2;composer card delete -c PeerAdmin@byfn-network-org3;composer card create -p /tmp/composer/org1/byfn-network-org1.json -u PeerAdmin -c /tmp/composer/org1/Admin@org1.example.com-cert.pem -k /tmp/composer/org1/*_sk -r PeerAdmin -r ChannelAdmin -f PeerAdmin@byfn-network-org1.card;composer card import -f PeerAdmin\@byfn-network-org1.card --card PeerAdmin@byfn-network-org1"
+
+
+
+
+- hosts: org2
+  remote_user: root
+  tasks:
+    - name :  初始化org2 compose
+      shell:  su - hyper -c "cd /home ; source .bashrc;\cp -a composer /tmp;composer card delete -c PeerAdmin@byfn-network-org1;composer card delete -c PeerAdmin@byfn-network-org2;composer card delete -c PeerAdmin@byfn-network-org3;composer card create -p /tmp/composer/org2/byfn-network-org2.json -u PeerAdmin -c /tmp/composer/org2/Admin@org2.example.com-cert.pem -k /tmp/composer/org2/*_sk -r PeerAdmin -r ChannelAdmin -f PeerAdmin@byfn-network-org2.card;composer card import -f PeerAdmin\@byfn-network-org2.card --card PeerAdmin@byfn-network-org2"
+
+
+
+- hosts: org3
+  remote_user: root
+  tasks:
+    - name :  初始化org3 compose
+      shell:  su - hyper -c "cd /home ; source .bashrc;\cp -a composer /tmp;composer card delete -c PeerAdmin@byfn-network-org1;composer card delete -c PeerAdmin@byfn-network-org2;composer card delete -c PeerAdmin@byfn-network-org3;composer card create -p /tmp/composer/org3/byfn-network-org3.json -u PeerAdmin -c /tmp/composer/org3/Admin@org3.example.com-cert.pem -k /tmp/composer/org3/*_sk -r PeerAdmin -r ChannelAdmin -f PeerAdmin@byfn-network-org3.card;composer card import -f PeerAdmin\@byfn-network-org3.card --card PeerAdmin@byfn-network-org3"
+
+
+
+- hosts: org1
+  remote_user: root
+  tasks:
+    - name :  org1 起network
+      shell:  su - hyper -c "cd /home ; source .bashrc;composer network install --card PeerAdmin@byfn-network-org1 --archiveFile trade-network@0.2.4.bna -o npmrcFile=npmConfig.txt"
+
+- hosts: org2
+  remote_user: root
+  tasks:
+    - name :  org2 起network      
+      shell:  su - hyper -c "cd /home ; source .bashrc;composer network install --card PeerAdmin@byfn-network-org2 --archiveFile trade-network@0.2.4.bna -o npmrcFile=npmConfig.txt "
+
+- hosts: org3
+  remote_user: root
+  tasks:
+    - name :  org3 起network      
+      shell:  su - hyper -c "cd /home ; source .bashrc;composer network install --card PeerAdmin@byfn-network-org3 --archiveFile trade-network@0.2.4.bna -o npmrcFile=npmConfig.txt "
+
+
+- hosts: org1
+  remote_user: root
+  tasks:
+    - name :  org1创建管理账号
+      shell:  su - hyper -c "cd /home ; source .bashrc;composer identity request -c PeerAdmin@byfn-network-org1 -u admin -s adminpw -d org1"
+
+- hosts: org2
+  remote_user: root
+  tasks:
+    - name :  org2创建管理账号      
+      shell: su - hyper -c " cd /home ; source .bashrc;composer identity request -c PeerAdmin@byfn-network-org2 -u admin -s adminpw -d org2"
+
+
+- hosts: org3
+  remote_user: root
+  tasks:
+    - name :  org3创建管理账号      
+      shell:  su - hyper -c "cd /home ; source .bashrc;composer identity request -c PeerAdmin@byfn-network-org3 -u admin -s adminpw -d org3"
+
+- hosts: org1
+  remote_user: root
+  tasks:
+    - name :  拉取其他两家证书
+      shell:  cd /home ;scp -r ca.org3.example.com:/home/org3 ./;scp -r ca.org2.example.com:/home/org2 ./
+
+
+- hosts: org1
+  remote_user: root
+  tasks:
+    - name :  org1实例化整个区块链网络 
+      shell:  su - hyper -c "cd /home ; source .bashrc;composer network start -o npmrcFile=npmConfig.txt -c PeerAdmin@byfn-network-org1 -n trade-network -V 0.2.4 -o endorsementPolicyFile=/tmp/composer/endorsement-policy.json -A org1 -C org1/admin-pub.pem -A org2 -C org2/admin-pub.pem -A org3 -C org3/admin-pub.pem  >run.log"
+
+
+- hosts: org1
+  remote_user: root
+  tasks:
+    - name :  org1 创建管理员card 
+      shell: su - hyper -c " cd /home ; source .bashrc;composer card create -p /tmp/composer/org1/byfn-network-org1.json -u org1 -n trade-network -c org1/admin-pub.pem -k org1/admin-priv.pem; composer card delete -c org1@trade-network;composer card delete -c org2@trade-network;composer card delete -c org3@trade-network;composer card import -f org1@trade-network.card"
+
+
+
+- hosts: org2
+  remote_user: root
+  tasks:
+    - name :  org2 创建管理员card 
+      shell:  su - hyper -c "cd /home ; source .bashrc;composer card create -p /tmp/composer/org2/byfn-network-org2.json -u org2 -n trade-network -c org2/admin-pub.pem -k org2/admin-priv.pem; composer card delete -c org1@trade-network;composer card delete -c org2@trade-network;composer card delete -c org3@trade-network;composer card import -f org2@trade-network.card"
+
+
+
+
+- hosts: org3
+  remote_user: root
+  tasks:
+    - name :  org3 创建管理员card 
+      shell:  su - hyper -c "cd /home ; source .bashrc;composer card create -p /tmp/composer/org3/byfn-network-org3.json -u org3 -n trade-network -c org3/admin-pub.pem -k org3/admin-priv.pem; composer card delete -c org1@trade-network;composer card delete -c org2@trade-network;composer card delete -c org3@trade-network;composer card import -f org3@trade-network.card"
+
+
+- hosts: org1
+  remote_user: root
+  tasks:
+    - name :  org1执行测试 
+      shell:  su - hyper -c "cd /home ; source .bashrc; composer network ping -c org1@trade-network"
+
+- hosts: org2
+  remote_user: root
+  tasks:
+    - name :  org2执行测试 
+      shell:  su - hyper -c "cd /home ; source .bashrc; composer network ping -c org2@trade-network"
+
+- hosts: org3
+  remote_user: root
+  tasks:
+    - name :  org3执行测试 
+      shell:  su - hyper -c "cd /home ; source .bashrc; composer network ping -c org3@trade-network"
+

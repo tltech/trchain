@@ -1,0 +1,108 @@
+---
+- hosts: all
+  tasks:
+    - name: 清理环境
+      shell: docker kill `docker ps -q` ;docker rm `docker ps -aq`;docker network prune -f ;   docker rmi $(docker images dev-* -q) -f
+      ignore_errors: yes
+
+- hosts: all
+  remote_user: hyper 
+  tasks:
+    - name: 复制文件
+      copy: src=/tmp/run.zip dest=/home/run.zip  owner=hyper group=hyper mode=0755
+
+    - name : 解压文件
+      shell:  cd /home/&& rm -rf ext* org*.yaml  channel-artifacts base crypto-config  && unzip -u -o run.zip
+      ignore_errors: yes
+
+
+- hosts: org1
+  remote_user: hyper
+  tasks:
+    - name :  启动org1-zk
+      shell:  cd /home/;docker-compose -f org1-zk.yaml down;docker-compose -f org1-zk.yaml up -d;docker-compose -f npm.yaml up -d
+
+- hosts: org2
+  remote_user: hyper
+  tasks:
+    - name :  启动org2-zk
+      shell:  cd /home/;docker-compose -f org2-zk.yaml down;docker-compose -f org2-zk.yaml up -d
+
+- hosts: org3
+  remote_user: hyper
+  tasks:
+    - name :  启动org3-zk
+      shell:  cd /home/;docker-compose -f org3-zk.yaml down;docker-compose -f org3-zk.yaml up -d
+
+
+- hosts: org1
+  remote_user: hyper
+  tasks:
+    - name :  启动org1-kafka
+      shell:  cd /home/;docker-compose -f org1-kafka.yaml down;docker-compose -f org1-kafka.yaml up -d
+
+- hosts: org2
+  remote_user: hyper
+  tasks:
+    - name :  启动org2-kafka
+      shell:  cd /home/;docker-compose -f org2-kafka.yaml down;docker-compose -f org2-kafka.yaml up -d
+
+
+- hosts: org3
+  remote_user: hyper
+  tasks:
+    - name :  启动org3-kafka
+      shell:  cd /home/;docker-compose -f org3-kafka.yaml down;docker-compose -f org3-kafka.yaml up -d
+
+
+- hosts: ext
+  remote_user: hyper
+  tasks:
+    - name :  启动ext-kafka
+      shell:  cd /home/;docker-compose -f ext-kafka.yaml down;docker-compose -f ext-kafka.yaml up -d
+
+
+- hosts: org1
+  remote_user: hyper
+  tasks:
+    - name :  启动org1-ord
+      shell:  cd /home/;docker-compose -f org1-ord.yaml down;docker-compose -f org1-ord.yaml up -d
+
+- hosts: org2
+  remote_user: hyper
+  tasks:
+    - name :  启动org2-ord
+      shell:  cd /home/;docker-compose -f org2-ord.yaml down;docker-compose -f org2-ord.yaml up -d
+
+
+
+- hosts: org3
+  remote_user: hyper
+  tasks:
+    - name :  启动org3-ord
+      shell:  cd /home/;docker-compose -f org3-ord.yaml down;docker-compose -f org3-ord.yaml up -d
+
+
+- hosts: ext
+  remote_user: hyper
+  tasks:
+    - name :  启动ext-ord
+      shell:  cd /home/;docker-compose -f ext-ord.yaml down;docker-compose -f ext-ord.yaml up -d
+
+- hosts: org1
+  remote_user: hyper
+  tasks:
+    - name :  启动org1 peer
+      shell:  cd /home/;docker-compose -f org1.yaml down;docker-compose -f org1.yaml up -d
+
+- hosts: org2
+  remote_user: hyper
+  tasks:
+    - name :  启动org2 peer
+      shell:  cd /home/;docker-compose -f org2.yaml down;docker-compose -f org2.yaml up -d
+- hosts: org3
+  remote_user: hyper
+  tasks:
+    - name :  启动org3 peer
+      shell:  cd /home/;docker-compose -f org3.yaml down;docker-compose -f org3.yaml up -d
+

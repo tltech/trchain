@@ -1,0 +1,12 @@
+version: '2'
+
+services:
+  npmregistry:
+    container_name: npmregistry
+    image: verdaccio/verdaccio
+    volumes:
+      - /home/config.yaml:/verdaccio/conf/config.yaml
+      - /home/repo:/verdaccio/storage/
+    ports:
+      - 4873:4873
+

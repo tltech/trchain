@@ -1,0 +1,37 @@
+version: '2'
+
+services:
+  kafka2:
+    container_name: kafka2
+    extends:
+      file: base/docker-compose-base.yaml
+      service: kafka
+    environment:
+      - KAFKA_BROKER_ID=3
+      - KAFKA_MIN_INSYNC_REPLICAS=2
+      - KAFKA_DEFAULT_REPLICATION_FACTOR=3
+      - KAFKA_ZOOKEEPER_CONNECT=10.200.156.202:2181,10.200.156.203:2181,10.200.156.204:2181
+      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://10.200.156.204:9092
+
+    extra_hosts:
+      - "zookeeper0:10.200.156.202"
+      - "zookeeper1:10.200.156.203"
+      - "zookeeper2:10.200.156.204"
+      - "kafka0:10.200.156.202"
+      - "kafka1:10.200.156.203"
+      - "kafka2:10.200.156.204"
+      - "kafka3:10.200.156.205"
+      - "orderer.example.com:10.200.156.202"
+      - "orderer1.example.com:10.200.156.203"
+      - "orderer2.example.com:10.200.156.204"
+      - "orderer3.example.com:10.200.156.205"
+      - "ca1:10.200.156.202"
+      - "peer0.org1.example.com:10.200.156.202"
+      - "peer1.org1.example.com:10.200.156.202"
+      - "ca2:10.200.156.203"
+      - "peer0.org2.example.com:10.200.156.203"
+      - "peer1.org2.example.com:10.200.156.203"
+      - "ca3:10.200.156.204"
+      - "peer0.org3.example.com:10.200.156.204"
+      - "peer1.org3.example.com:10.200.156.204"
+

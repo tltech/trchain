@@ -1,0 +1,38 @@
+---
+
+- hosts: all
+  remote_user: root
+  tasks:
+    - name: 复制文件
+      copy: src=/opt/run.tgz dest=/opt/run.tgz  owner=root group=root mode=0755
+
+    - name : 解压文件
+      shell:  cd /opt ;tar zxvf  run.tgz
+      ignore_errors: yes
+
+- hosts: all
+  remote_user: root
+  tasks:
+    - name : 执行安装基础环境(大概五分钟)
+      shell: cd /opt  && sh -x install_env.sh
+
+
+
+- hosts: all
+  remote_user: root
+  tasks:
+    - name : 安装Compose相关(大概十分钟)
+      shell:  cd /opt;sh -x compose.sh
+
+- hosts: all
+  remote_user: root
+  tasks:
+    - name : 安装docker镜像(大概十分钟)
+      shell:  cd /opt;sh -x downimages.sh
+
+
+- hosts: all
+  remote_user: root
+  tasks:
+    - name :  复制hosts
+      shell:  \cp /opt/file/fabric1.1/hosts /etc/
