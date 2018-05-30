@@ -4,6 +4,7 @@ This project is mainly used to quickly configure a highly available Hyperledger 
 It takes about three months for a novice to start building from the official instance to the final data. If you can quickly use this project, you can undoubtedly grasp it quickly.
 
 This project is mainly divided into these parts:
+
          1.docker and mirror installation
          
          2.hyperledger development environment installation
@@ -15,11 +16,13 @@ This project is mainly divided into these parts:
          5. Orderer server high availability architecture
 
 It can help you:
+
         1. Quickly understand the ibm blockchain project (HyperLedger fabric1.1); Quickly build a highly available version of the architecture.
         
         2. This is a standard online production environment architecture. Of course you have to configure his persistence.
         
         3.HyperLedger compose A set of automated installation and chaining of the framework, each command has been practiced many times.
+        
 ##  Preface
 
 This sample needs to run on a mutual certificate ssh access basis;
