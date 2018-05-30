@@ -1,3 +1,19 @@
+## Introduction
+This project is mainly used to quickly configure a highly available Hyperledger Fabric network and development environment.
+
+It takes about three months for a novice to start building from the official instance to the final data. If you can quickly use this project, you can undoubtedly grasp it quickly.
+
+This project is mainly divided into these parts:
+         1.docker and mirror installation
+         2.hyperledger development environment installation
+         3. Fabric network installation with 3 organizations
+         4. Installation of a smart contract
+         5. Orderer server high availability architecture
+
+It can help you:
+        1. Quickly understand the ibm blockchain project (HyperLedger fabric1.1); Quickly build a highly available version of the architecture.
+        2. This is a standard online production environment architecture. Of course you have to configure his persistence.
+        3.HyperLedger compose a set of framework automation,
 ##  Preface
 
 This sample needs to run on a mutual certificate ssh access basis;
